@@ -2,3 +2,5 @@ Flask
 requests
 google-cloud-bigquery
 google-auth
+structlog
+gunicorn

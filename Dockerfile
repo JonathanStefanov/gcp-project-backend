@@ -1,6 +1,9 @@
 # Use an official Python runtime as a parent image
 FROM python:3.8-slim
 
+# To allow the logs to display to google cloud directly
+ENV PYTHONUNBUFFERED 1
+
 # Set the working directory in the container
 WORKDIR /app
 
@@ -15,4 +18,4 @@ EXPOSE 8080
 
 
 # Run app.py when the container launches
-CMD ["python", "main.py"]
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
