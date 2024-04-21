@@ -4,3 +4,4 @@ google-cloud-bigquery
 google-auth
 structlog
 gunicorn
+python-dotenv
