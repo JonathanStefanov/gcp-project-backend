@@ -1,50 +1,82 @@
-# Adjusting the code with a larger font size for the time
-
 from PIL import Image, ImageDraw, ImageFont
 import datetime
+import requests
+from io import BytesIO
+import urllib.request
+import functools
+import io
+from weather_api import get_outdoor_weather
+from bigquery_client import get_last_weather_data
 
-# Create a new image with white background
-img = Image.new('RGB', (320, 240), color='white')
-d = ImageDraw.Draw(img)
+# Constants
+M5STACK_X_SIZE = 320
+M5STACK_Y_SIZE = 240
+WEATHER_ICON_X_SIZE = 40
+WEATHER_ICON_Y_SIZE = 40
+FONT_SIZE = 30
 
-# Define fonts with increased size for time
-try:
-    font_time = ImageFont.truetype("arial.ttf", 40)  # Increased size for time
-    font_data = ImageFont.truetype("arial.ttf", 20)
-except IOError:
-    font_time = ImageFont.load_default()
-    font_data = ImageFont.load_default()
+def fetch_weather_icon(icon_url):
+    response = requests.get(icon_url)
+    icon = Image.open(BytesIO(response.content))
+    icon = icon.resize((WEATHER_ICON_X_SIZE, WEATHER_ICON_Y_SIZE))
+    return icon.convert("RGBA")
 
-# Display current time centered and larger at the top
-current_time = datetime.datetime.now().strftime("%H:%M")
-time_bbox = d.textbbox((0, 0), current_time, font=font_time)
-time_width = time_bbox[2] - time_bbox[0]
-time_x = (320 - time_width) // 2
-d.text((time_x, 10), current_time, font=font_time, fill=(0, 0, 0))
+@functools.lru_cache
+def get_font_from_url(font_url):
+    return urllib.request.urlopen(font_url).read()
 
-# Data to display in the quadrant, except weather description
-data = {
-    "Temperature Indoor": "22°C",
-    "Humidity Indoor": "45%",
-    "Pressure Indoor": "1012 hPa",
-    "CO2 Indoor": "900 ppm",
-    "Temperature Outdoor": "18°C",
-    "Wind Speed": "5 km/h"
-}
+def webfont(font_url):
+    return io.BytesIO(get_font_from_url(font_url))
 
-# Calculate the quadrant positions and dimensions
-start_x, start_y = 10, 80  # Adjusted Y start for more space due to bigger time font
-col_width = 150
-row_height = 30
+def create_base_image():
+    return Image.new('RGBA', (M5STACK_X_SIZE, M5STACK_Y_SIZE), (255, 255, 255, 255))
 
-for i, (key, value) in enumerate(data.items()):
-    x = start_x + (i % 2) * col_width
-    y = start_y + (i // 2) * row_height
-    d.text((x, y), f"{key}: {value}", font=font_data, fill=(0, 0, 0))
+def draw_weather(img, font_url, outdoor_weather, indoor_weather):
+    draw = ImageDraw.Draw(img)
+    now = datetime.datetime.now()
+    current_time = now.strftime("%H:%M")
 
-# Save and display the image
-img_path = "digital_thermometer.png"
-img.save(img_path)
-img.show()
+    with webfont(font_url) as font_stream:
 
-img_path
+        font = ImageFont.truetype(font_stream, FONT_SIZE)
+    with webfont(font_url) as font_stream:
+
+        font_min = ImageFont.truetype(font_stream, FONT_SIZE - 15)
+    with webfont(font_url) as font_stream:
+
+        font_mid = ImageFont.truetype(font_stream, FONT_SIZE - 9)
+
+    # Text and icon positions
+    text_position = (M5STACK_X_SIZE // 2 - 2*FONT_SIZE + 10, 10)
+    weather_icon_position = (M5STACK_X_SIZE // 2  + WEATHER_ICON_X_SIZE - 10, 10)
+    
+    # Draw elements
+    draw.text(text_position, current_time, font=font, fill='black')
+    draw.line((20, 50, M5STACK_X_SIZE - 20, 50), fill=128)  # Horizontal line
+    draw.line((M5STACK_X_SIZE // 2, 50, M5STACK_X_SIZE // 2, M5STACK_Y_SIZE), fill=128)  # Vertical line
+
+    icon = fetch_weather_icon(outdoor_weather['icon_url'])
+    img.paste(icon, weather_icon_position, icon)
+
+    draw.text((80, 60), "In", font=font_min, fill='black')
+    draw.text((M5STACK_X_SIZE - 90, 60), "Out", font=font_min, fill='black')
+    draw.text((M5STACK_X_SIZE // 2 + 60, 90), f"{outdoor_weather['temperature_c']}°C", font=font_mid, fill='black')
+    draw.text((55, 90), f"{indoor_weather['temperature']}°C", font=font_mid, fill='black')
+
+    return img
+
+def generate_image():
+    # Fetch weather data
+    outdoor_weather = get_outdoor_weather()
+    indoor_weather = get_last_weather_data()
+
+    # Define the font URL
+    font_url = "https://github.com/google/fonts/raw/main/ufl/ubuntu/Ubuntu-Regular.ttf"
+
+    # Create base image and draw weather
+    img = create_base_image()
+    final_image = draw_weather(img, font_url, outdoor_weather, indoor_weather)
+
+    # Save or show image
+    final_image.save("digital_thermometer.png")
+    return final_image

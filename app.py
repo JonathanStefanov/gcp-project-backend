@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import requests
 import signal
 from types import FrameType
@@ -7,19 +7,16 @@ from auth import token_required
 from bigquery_client import insert_weather_data, get_last_weather_data
 from utils.logging import logger
 from utils.logging import flush
-
 import sys 
-
+from image_generator import generate_image
 app = Flask(__name__)
 
 
-# Variable to store the last weather data
-last_weather_data = None
 
 @app.route('/get_outdoor_weather')
 @token_required
 def outdoor_weather_route():
-    return get_outdoor_weather()
+    return jsonify(get_outdoor_weather())
 
 @app.route('/upload_indoor_weather', methods=['POST'])
 @token_required
@@ -39,6 +36,14 @@ def upload_indoor_weather_route():
 @token_required
 def last_indoor_weather_route():
     return jsonify(get_last_weather_data())
+
+
+@app.route('/generate_image')
+@token_required
+def generate_image_route():
+    img = generate_image()
+    img.save("output.png")
+    return send_file('output.png', mimetype='image/png')
 
 
 def shutdown_handler(signal_int: int, frame: FrameType) -> None:

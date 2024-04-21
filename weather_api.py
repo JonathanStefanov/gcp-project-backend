@@ -1,5 +1,4 @@
 import requests
-from flask import jsonify
 import os
 from dotenv import load_dotenv
 
@@ -21,6 +20,6 @@ def get_outdoor_weather():
             "condition_text": data['current']['condition']['text'],
             "icon_url": "https:" + data['current']['condition']['icon']
         }
-        return jsonify(weather)
+        return weather
     else:
-        return jsonify({"error": "Failed to fetch weather data"}), response.status_code
+        return ({"error": "Failed to fetch weather data"})
