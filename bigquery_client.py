@@ -1,13 +1,20 @@
 from google.cloud import bigquery
 from google.oauth2 import service_account
+import os.path
 
 def setup_bigquery_client() -> bigquery.Client:
     """
     Sets up and returns a BigQuery client using credentials from a service account file.
     """
-    credentials = service_account.Credentials.from_service_account_file('./gcp_key.json')
+    # Checks if local environment or Google Cloud environment
+    # check if file ./gcp_key.json exists
     project_id = 'nice-etching-420812'
-    return bigquery.Client(credentials=credentials, project=project_id)
+
+    if os.path.isfile('./gcp_key.json'):
+        credentials = service_account.Credentials.from_service_account_file('./gcp_key.json')
+        return bigquery.Client(credentials=credentials, project=project_id)
+    else:
+        return bigquery.Client(project=project_id)
 
 def insert_weather_data(temperature: float, pressure: float, humidity: float) -> bool:
     """
