@@ -9,6 +9,7 @@ from utils.logging import logger
 from utils.logging import flush
 import sys 
 from image_generator import generate_image
+from text_to_speech import generate_tts
 app = Flask(__name__)
 
 
@@ -44,6 +45,13 @@ def generate_image_route():
     img = generate_image()
     img.save("output.png")
     return send_file('output.png', mimetype='image/png')
+
+@app.route('/generate_tts')
+@token_required
+def generate_tts_route():
+    data = "Outside: " + str(get_outdoor_weather()) + "Inside: " + str(get_last_weather_data())
+    generate_tts(data)
+    return send_file('output.mp3', mimetype='audio/mpeg')
 
 
 def shutdown_handler(signal_int: int, frame: FrameType) -> None:
