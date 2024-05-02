@@ -2,7 +2,7 @@ import vertexai
 from vertexai.generative_models import GenerativeModel, Part
 import json
 from google.cloud import texttospeech
-from utils.logging import logger
+
 # Initialize Vertex AI
 vertexai.init(project='nice-etching-420812', location='europe-west4')
 
@@ -64,7 +64,4 @@ def create_tts(text: str) -> None:
 
 def generate_tts(data) -> None:
     complete_text = get_full_text(data)
-    logger.info(f"Generated TTS: {complete_text}")
-
     create_tts(complete_text)
-    logger.info("TTS file created")
