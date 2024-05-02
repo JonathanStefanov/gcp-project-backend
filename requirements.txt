@@ -6,3 +6,6 @@ structlog
 gunicorn
 python-dotenv
 Pillow
+google-cloud-texttospeech
+vertexai
+google-cloud-aiplatform
