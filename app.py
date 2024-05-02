@@ -10,6 +10,7 @@ from utils.logging import flush
 import sys 
 from image_generator import generate_image
 from text_to_speech import generate_tts
+from health import health_status
 app = Flask(__name__)
 
 
@@ -53,6 +54,10 @@ def generate_tts_route():
     generate_tts(data)
     return send_file('output.mp3', mimetype='audio/mpeg')
 
+@app.route('/health')
+@token_required
+def health():
+    return jsonify(health_status())
 
 def shutdown_handler(signal_int: int, frame: FrameType) -> None:
     logger.info(f"Caught Signal {signal.strsignal(signal_int)}")

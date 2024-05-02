@@ -77,3 +77,24 @@ def get_all_weather_data() -> list:
         all_data.append({"temperature": row.temperature, "pressure": row.pressure, "humidity": row.humidity})
     
     return all_data
+
+
+def get_last_ping_time() -> str:
+    """
+    Retrieves the most recent ping time from the BigQuery table.
+    """
+    client = setup_bigquery_client()
+    table_id = "nice-etching-420812.project.indoor_weather"
+    
+    query = f"""
+    SELECT *
+    FROM `{table_id}`
+    ORDER BY entry_timestamp DESC
+    LIMIT 1
+    """
+    
+    query_job = client.query(query)  # Make an API request.
+    results = query_job.result()  # Wait for the job to complete.
+    
+    for row in results:
+        return row.entry_timestamp
