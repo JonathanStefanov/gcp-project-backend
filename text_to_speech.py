@@ -22,7 +22,7 @@ def get_full_text(text_query) -> str:
                 You are an AI assistant that will receive data about the indoor and outdoor weather.
                 You will also give some ideas like, if the weather is bad, say don't forget to close the window !
                 If the weather is good, say what a good outdoor today !
-                If the weather if very cold outside and hot inside the house, say something like 'Its good to be home, so hot inside compaered to the cold outside'
+                If the weather is very cold outside and hot inside the house, say something like 'Its good to be home, so hot inside compaered to the cold outside'
                 """
                 + text_query
             )
