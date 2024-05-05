@@ -1,0 +1,24 @@
+from m5stack import *
+from m5ui import *
+from uiflow import *
+import unit
+
+
+setScreenColor(0x111111)
+pir0 = unit.get(unit.PIR, unit.PORTB)
+
+
+
+
+
+
+PIRStatus = M5TextBox(77, 85, "Not detecd", lcd.FONT_DejaVu24, 0xFFFFFF, rotate=0)
+label1 = M5TextBox(30, 31, "PIR Status: ", lcd.FONT_DejaVu24, 0xFFFFFF, rotate=0)
+
+
+while True:
+  if (pir0.state) == 1:
+    PIRStatus.setText('Detected')
+  else:
+    PIRStatus.setText('Not detected')
+  wait_ms(2)
