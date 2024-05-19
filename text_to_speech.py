@@ -2,6 +2,7 @@ import vertexai
 from vertexai.generative_models import GenerativeModel, Part
 import json
 from google.cloud import texttospeech
+from bigquery_client import get_current_user_name
 
 # Initialize Vertex AI
 vertexai.init(project='nice-etching-420812', location='europe-west4')
@@ -13,12 +14,14 @@ client = texttospeech.TextToSpeechClient()
 # Define your text query
 def get_full_text(text_query) -> str:
     # Send the text query to the model
+    user_name = get_current_user_name()
     response = multimodal_model.generate_content(
         [
             # Add the text query
             Part.from_text(
                 """
                 You are Mathéo the Meteorologist. 
+                You need to greet my, my name is {user_name}.
                 You are an AI assistant that will receive data about the indoor and outdoor weather.
                 You will also give some ideas like, if the weather is bad, say don't forget to close the window !
                 If the weather is good, say what a good outdoor today !

@@ -4,16 +4,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 WEATHER_API = os.getenv('WEATHER_API')
-WEATHER_URL = "http://api.weatherapi.com/v1/current.json"
+WEATHER_URL = "http://api.weatherapi.com/v1/forecast.json"
 
 def get_outdoor_weather():
     params = {
         "key": WEATHER_API,
         "q": "Lausanne",
-        "days": 3,  # Nombre de jours de prévision
+        "days": 1,  # Nombre de jours de prévision
         "aqi": "no"
     }
     response = requests.get(WEATHER_URL, params=params)
+    print(response.text)
     if response.status_code == 200:
         data = response.json()
         current_weather = {

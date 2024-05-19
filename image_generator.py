@@ -55,13 +55,15 @@ def draw_weather(img, font_url, outdoor_weather, indoor_weather):
     draw.line((20, 50, M5STACK_X_SIZE - 20, 50), fill=128)  # Horizontal line
     draw.line((M5STACK_X_SIZE // 2, 50, M5STACK_X_SIZE // 2, M5STACK_Y_SIZE), fill=128)  # Vertical line
 
-    icon = fetch_weather_icon(outdoor_weather['icon_url'])
+    icon = fetch_weather_icon(outdoor_weather['current_weather']['icon_url'])
     img.paste(icon, weather_icon_position, icon)
 
     draw.text((80, 60), "In", font=font_min, fill='black')
     draw.text((M5STACK_X_SIZE - 90, 60), "Out", font=font_min, fill='black')
-    draw.text((M5STACK_X_SIZE // 2 + 60, 90), f"{outdoor_weather['temperature_c']}°C", font=font_mid, fill='black')
+    draw.text((M5STACK_X_SIZE // 2 + 60, 90), f"{outdoor_weather['current_weather']['temperature_c']}°C", font=font_mid, fill='black')
     draw.text((55, 90), f"{indoor_weather['temperature']}°C", font=font_mid, fill='black')
+    draw.text((55, 120), f"{indoor_weather['pressure']} hPa", font=font_mid, fill='black')
+
 
     return img
 
@@ -80,3 +82,7 @@ def generate_image():
     # Save or show image
     final_image.save("digital_thermometer.png")
     return final_image
+
+if __name__ == "__main__":
+    generate_image()
+    print("Image generated successfully")

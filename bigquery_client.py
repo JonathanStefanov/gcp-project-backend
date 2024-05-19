@@ -55,6 +55,26 @@ def get_last_weather_data() -> dict:
     
     for row in results:
         return {"temperature": row.temperature, "pressure": row.pressure, "humidity": row.humidity}
+    
+def get_current_user_name() -> dict:
+    """
+    Retrieves the most recent user name from the BigQuery table `current_user`.
+    """
+    client = setup_bigquery_client()
+    table_id = "nice-etching-420812.project.current_user"
+    
+    query = f"""
+    SELECT *
+    FROM `{table_id}`
+    ORDER BY entry_timestamp DESC
+    LIMIT 1
+    """
+    
+    query_job = client.query(query)  # Make an API request.
+    results = query_job.result()  # Wait for the job to complete.
+    
+    for row in results:
+        return {"name": row.name}
 
 def get_all_weather_data() -> list:
     """
