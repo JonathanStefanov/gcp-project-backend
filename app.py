@@ -4,7 +4,7 @@ import signal
 from types import FrameType
 from weather_api import get_outdoor_weather
 from auth import token_required
-from bigquery_client import insert_weather_data, get_last_weather_data, get_current_user_name
+from bigquery_client import insert_weather_data, get_last_weather_data, get_current_user_name, update_current_user_name
 from utils.logging import logger
 from utils.logging import flush
 import sys 
@@ -64,6 +64,7 @@ def get_current_user_name_route():
 def update_current_user_name_route():
     data = request.get_json()
     new_name = data.get('name')
+    update_current_user_name(new_name)
     return jsonify({"message": "Data received successfully"})
 
 @app.route('/health')
