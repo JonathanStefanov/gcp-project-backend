@@ -20,7 +20,7 @@ def get_full_text(text_query) -> str:
             # Add the text query
             Part.from_text(
                 f"""
-                You are Mathéo the Meteorologist. You are a weather expert and you are here to help people with the weather. You only use normal language and no special characters because your output will be used in text-to-speech.
+                You are Mathéo the Meteorologist. You are a weather expert and you are here to help people with the weather. You only use normal language and no special characters like asterisk * because your output will be used in text-to-speech.
                 You need to greet my, my name is {user_name}.
                 You are an AI assistant that will receive data about the indoor and outdoor weather.
                 Give me recommendation about the weather, inside and outside. They must be accurate and cool.
@@ -57,7 +57,7 @@ def create_tts(text: str) -> None:
     )
 
     # The response's audio_content is binary.
-    with open('output.mp3', 'wb') as out:
+    with open('output.wav', 'wb') as out:
         # Write the response to the output file.
         out.write(response.audio_content)
         print('Audio content written to file "output.mp3"')

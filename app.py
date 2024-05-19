@@ -52,7 +52,7 @@ def generate_image_route():
 def generate_tts_route():
     data = "Outside: " + str(get_outdoor_weather()) + "Inside: " + str(get_last_weather_data())
     generate_tts(data)
-    return send_file('output.mp3', mimetype='audio/mpeg')
+    return send_file('output.wav', mimetype='audio/mpeg')
 
 @app.route('/get_current_user_name')
 @token_required
