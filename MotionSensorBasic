@@ -2,6 +2,7 @@ from m5stack import *
 from m5ui import *
 from uiflow import *
 import unit
+import urequests as requests
 
 
 setScreenColor(0x111111)
