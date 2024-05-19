@@ -16,7 +16,7 @@ def setup_bigquery_client() -> bigquery.Client:
     else:
         return bigquery.Client(project=project_id)
 
-def insert_weather_data(temperature: float, pressure: float, humidity: float) -> bool:
+def insert_weather_data(temperature: float, pressure: float, humidity: float, co2: float) -> bool:
     """
     Inserts weather data into the BigQuery table.
 
@@ -29,7 +29,7 @@ def insert_weather_data(temperature: float, pressure: float, humidity: float) ->
     table_id = "nice-etching-420812.project.indoor_weather"
     
     rows_to_insert = [
-        {"temperature": temperature, "pressure": pressure, "humidity": humidity}
+        {"temperature": temperature, "pressure": pressure, "humidity": humidity, "co2": co2}
     ]
     
     errors = client.insert_rows_json(table_id, rows_to_insert)

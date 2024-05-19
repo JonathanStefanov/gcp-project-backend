@@ -26,10 +26,10 @@ def upload_indoor_weather_route():
     # Retrieve data from the POST request
     data = request.get_json()
     
-    temperature, humidity, pressure = data.get('temperature'), data.get('humidity'), data.get('pressure')
+    temperature, humidity, pressure, co2 = data.get('temperature'), data.get('humidity'), data.get('pressure'), data.get('co2')
 
     # Insert the data into BigQuery
-    if insert_weather_data(temperature, pressure, humidity):
+    if insert_weather_data(temperature, pressure, humidity, co2):
         return jsonify({"message": "Data received successfully"})
     else:
         return jsonify({"error": "Failed to insert data into BigQuery"}), 500
