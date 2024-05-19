@@ -59,6 +59,13 @@ def generate_tts_route():
 def get_current_user_name_route():
     return jsonify({"name" : get_current_user_name()})
 
+@app.route('/update_current_user_name', methods=['POST'])
+@token_required
+def update_current_user_name_route():
+    data = request.get_json()
+    new_name = data.get('name')
+    return jsonify({"message": "Data received successfully"})
+
 @app.route('/health')
 @token_required
 def health():

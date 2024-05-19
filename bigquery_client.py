@@ -77,6 +77,24 @@ def get_current_user_name() -> dict:
 
     return "Unknown User"  # Return None if no rows are found
 
+def update_current_user_name(new_name: str):
+    """
+    Updates the user name in the BigQuery table `current_user`.
+    """
+    client = setup_bigquery_client()
+    table_id = "nice-etching-420812.project.current_user"
+    
+    query = f"""
+    UPDATE `{table_id}`
+    SET name = '{new_name}'
+    WHERE TRUE  -- Updates all rows in the table. Adjust the condition as needed.
+    """
+    
+    query_job = client.query(query)  # Make an API request.
+    query_job.result()  # Wait for the job to complete.
+    
+    print(f"User name updated to '{new_name}'.")
+
 def get_all_weather_data() -> list:
     """
     Retrieves all weather data records from the BigQuery table.
@@ -119,3 +137,5 @@ def get_last_ping_time() -> str:
     
     for row in results:
         return row.entry_timestamp
+    
+
