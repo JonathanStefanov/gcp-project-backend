@@ -4,7 +4,7 @@ import signal
 from types import FrameType
 from weather_api import get_outdoor_weather
 from auth import token_required
-from bigquery_client import insert_weather_data, get_last_weather_data
+from bigquery_client import insert_weather_data, get_last_weather_data, get_current_user_name
 from utils.logging import logger
 from utils.logging import flush
 import sys 
@@ -53,6 +53,11 @@ def generate_tts_route():
     data = "Outside: " + str(get_outdoor_weather()) + "Inside: " + str(get_last_weather_data())
     generate_tts(data)
     return send_file('output.mp3', mimetype='audio/mpeg')
+
+@app.route('/get_current_user_name')
+@token_required
+def get_current_user_name_route():
+    return jsonify({"name" : get_current_user_name()})
 
 @app.route('/health')
 @token_required
