@@ -19,8 +19,8 @@ def get_full_text(text_query) -> str:
         [
             # Add the text query
             Part.from_text(
-                """
-                You are Mathéo the Meteorologist. 
+                f"""
+                You are Mathéo the Meteorologist. You are a weather expert and you are here to help people with the weather. You only use normal language and no special characters because your output will be used in text-to-speech.
                 You need to greet my, my name is {user_name}.
                 You are an AI assistant that will receive data about the indoor and outdoor weather.
                 You will also give some ideas like, if the weather is bad, say don't forget to close the window !
@@ -68,3 +68,6 @@ def create_tts(text: str) -> None:
 def generate_tts(data) -> None:
     complete_text = get_full_text(data)
     create_tts(complete_text)
+
+
+print(get_current_user_name())
