@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 import datetime
+from datetime import timedelta
 import requests
 from io import BytesIO
 import urllib.request
@@ -41,7 +42,7 @@ def create_base_image():
 
 def draw_weather(img, font_url, outdoor_weather, indoor_weather):
     draw = ImageDraw.Draw(img)
-    now = datetime.datetime.now()
+    now = datetime.datetime.now() + timedelta(hours=2)
     current_time = now.strftime("%H:%M")
     current_date = now.strftime("%d/%m/%Y")
 
