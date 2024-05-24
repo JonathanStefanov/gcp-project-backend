@@ -10,7 +10,7 @@ def get_outdoor_weather():
     params = {
         "key": WEATHER_API,
         "q": "Lausanne",
-        "days": 1,  # Nombre de jours de prévision
+        "days": 3,  # Nombre de jours de prévision
         "aqi": "no"
     }
     response = requests.get(WEATHER_URL, params=params)

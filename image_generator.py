@@ -22,6 +22,12 @@ def fetch_weather_icon(icon_url):
     icon = icon.resize((WEATHER_ICON_X_SIZE, WEATHER_ICON_Y_SIZE))
     return icon.convert("RGBA")
 
+def fetch_forecast_weather_icon(icon_url):
+    response = requests.get(icon_url)
+    icon = Image.open(BytesIO(response.content))
+    icon = icon.resize((50, 50))
+    return icon.convert("RGBA")
+
 @functools.lru_cache
 def get_font_from_url(font_url):
     return urllib.request.urlopen(font_url).read()
@@ -55,11 +61,15 @@ def draw_weather(img, font_url, outdoor_weather, indoor_weather):
     with webfont(font_url) as font_stream:
 
         font_big = ImageFont.truetype(font_stream, FONT_SIZE + 15)
+    with webfont(font_url) as font_stream:
+
+        font_smallest = ImageFont.truetype(font_stream, FONT_SIZE - 20)
+
 
     # Text and icon positions
-    text_position = (M5STACK_X_SIZE // 2 -FONT_SIZE - 20 , 20)
+    text_position = (M5STACK_X_SIZE // 2 -FONT_SIZE - 20 , 10)
     date_text_position = (M5STACK_X_SIZE // 2 -FONT_SIZE , 0)
-    weather_icon_position = (M5STACK_X_SIZE // 2  - WEATHER_ICON_X_SIZE - 10, 60)
+    weather_icon_position = (M5STACK_X_SIZE // 2  - WEATHER_ICON_X_SIZE - 10, 35)
     
     # Draw elements
     draw.text(text_position, current_time, font=font_big, fill='black')
@@ -68,10 +78,24 @@ def draw_weather(img, font_url, outdoor_weather, indoor_weather):
     icon = fetch_weather_icon(outdoor_weather['current_weather']['icon_url'])
     img.paste(icon, weather_icon_position, icon)
 
-    draw.text((M5STACK_X_SIZE // 2 + 10, 90), f"{outdoor_weather['current_weather']['temperature_c']}°C", font=font, fill='black')
-    draw.text((15, 210), f"{indoor_weather['temperature']}°C", font=font_min, fill='black')
-    draw.text((M5STACK_X_SIZE // 2 - 25, 210), f"{indoor_weather['humidity']} %", font=font_min, fill='black')
-    draw.text((M5STACK_X_SIZE - 75, 210), f"{indoor_weather['co2']} ppm", font=font_min, fill='black')
+    draw.text((M5STACK_X_SIZE // 2 + 10, 65), f"{outdoor_weather['current_weather']['temperature_c']}°C", font=font, fill='black')
+    draw.text((15, 222), f"{indoor_weather['temperature']}°C", font=font_min, fill='black')
+    draw.text((M5STACK_X_SIZE // 2 - 25, 222), f"{indoor_weather['humidity']} %", font=font_min, fill='black')
+    draw.text((M5STACK_X_SIZE - 75, 222), f"{indoor_weather['co2']} ppm", font=font_min, fill='black')
+
+    # Forecast
+    forecast = outdoor_weather['forecast']
+    for i, day in enumerate(forecast):
+        icon = fetch_forecast_weather_icon(day['icon_url'])
+        img.paste(icon, (25 + i * 110, 110), icon)
+
+        # Calculate the future date for each forecasted day
+        future_date = now + timedelta(days=i)
+        date_str = future_date.strftime("%d/%m")  # Format the date as day/month for display
+
+        # Draw the temperature forecast and the future date
+        draw.text((20 + i * 110, 165), f"{day['min_temp']}°C/{day['max_temp']}°C", font=font_smallest, fill='black')
+        draw.text((35 + i * 110, 155), date_str, font=font_smallest, fill='black')
 
 
     return img
