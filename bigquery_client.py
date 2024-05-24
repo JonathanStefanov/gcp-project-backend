@@ -54,7 +54,7 @@ def get_last_weather_data() -> dict:
     results = query_job.result()  # Wait for the job to complete.
     
     for row in results:
-        return {"temperature": row.temperature, "pressure": row.pressure, "humidity": row.humidity}
+        return {"temperature": row.temperature, "pressure": row.pressure, "humidity": row.humidity, "co2": row.co2}
     
 def get_current_user_name() -> dict:
     """
@@ -173,4 +173,3 @@ def get_last_ping_time() -> str:
 
 
 
-print(get_mean_weather_data_per_hour())

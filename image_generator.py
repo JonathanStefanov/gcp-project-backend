@@ -11,8 +11,8 @@ from bigquery_client import get_last_weather_data
 # Constants
 M5STACK_X_SIZE = 320
 M5STACK_Y_SIZE = 240
-WEATHER_ICON_X_SIZE = 40
-WEATHER_ICON_Y_SIZE = 40
+WEATHER_ICON_X_SIZE = 100
+WEATHER_ICON_Y_SIZE = 100
 FONT_SIZE = 30
 
 def fetch_weather_icon(icon_url):
@@ -29,12 +29,21 @@ def webfont(font_url):
     return io.BytesIO(get_font_from_url(font_url))
 
 def create_base_image():
-    return Image.new('RGBA', (M5STACK_X_SIZE, M5STACK_Y_SIZE), (255, 255, 255, 255))
+    # Load the background image from a file
+    img = Image.open('assets/bg1.png')
+    
+    # Optionally resize the image if it's not the correct dimensions
+    if img.size != (M5STACK_X_SIZE, M5STACK_Y_SIZE):
+        img = img.resize((M5STACK_X_SIZE, M5STACK_Y_SIZE))
+    
+    return img.convert("RGBA")
+
 
 def draw_weather(img, font_url, outdoor_weather, indoor_weather):
     draw = ImageDraw.Draw(img)
     now = datetime.datetime.now()
     current_time = now.strftime("%H:%M")
+    current_date = now.strftime("%d/%m/%Y")
 
     with webfont(font_url) as font_stream:
 
@@ -44,25 +53,24 @@ def draw_weather(img, font_url, outdoor_weather, indoor_weather):
         font_min = ImageFont.truetype(font_stream, FONT_SIZE - 15)
     with webfont(font_url) as font_stream:
 
-        font_mid = ImageFont.truetype(font_stream, FONT_SIZE - 9)
+        font_big = ImageFont.truetype(font_stream, FONT_SIZE + 15)
 
     # Text and icon positions
-    text_position = (M5STACK_X_SIZE // 2 - 2*FONT_SIZE + 10, 10)
-    weather_icon_position = (M5STACK_X_SIZE // 2  + WEATHER_ICON_X_SIZE - 10, 10)
+    text_position = (M5STACK_X_SIZE // 2 -FONT_SIZE - 20 , 20)
+    date_text_position = (M5STACK_X_SIZE // 2 -FONT_SIZE , 0)
+    weather_icon_position = (M5STACK_X_SIZE // 2  - WEATHER_ICON_X_SIZE - 10, 60)
     
     # Draw elements
-    draw.text(text_position, current_time, font=font, fill='black')
-    draw.line((20, 50, M5STACK_X_SIZE - 20, 50), fill=128)  # Horizontal line
-    draw.line((M5STACK_X_SIZE // 2, 50, M5STACK_X_SIZE // 2, M5STACK_Y_SIZE), fill=128)  # Vertical line
+    draw.text(text_position, current_time, font=font_big, fill='black')
+    draw.text(date_text_position, current_date, font=font_min, fill='black')
 
     icon = fetch_weather_icon(outdoor_weather['current_weather']['icon_url'])
     img.paste(icon, weather_icon_position, icon)
 
-    draw.text((80, 60), "In", font=font_min, fill='black')
-    draw.text((M5STACK_X_SIZE - 90, 60), "Out", font=font_min, fill='black')
-    draw.text((M5STACK_X_SIZE // 2 + 60, 90), f"{outdoor_weather['current_weather']['temperature_c']}°C", font=font_mid, fill='black')
-    draw.text((55, 90), f"{indoor_weather['temperature']}°C", font=font_mid, fill='black')
-    draw.text((55, 120), f"{indoor_weather['pressure']} hPa", font=font_mid, fill='black')
+    draw.text((M5STACK_X_SIZE // 2 + 10, 90), f"{outdoor_weather['current_weather']['temperature_c']}°C", font=font, fill='black')
+    draw.text((15, 210), f"{indoor_weather['temperature']}°C", font=font_min, fill='black')
+    draw.text((M5STACK_X_SIZE // 2 - 25, 210), f"{indoor_weather['humidity']} %", font=font_min, fill='black')
+    draw.text((M5STACK_X_SIZE - 75, 210), f"{indoor_weather['co2']} ppm", font=font_min, fill='black')
 
 
     return img
