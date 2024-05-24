@@ -117,6 +117,38 @@ def get_all_weather_data() -> list:
     
     return all_data
 
+def get_mean_weather_data_per_hour() -> list:
+    """
+    Retrieves mean temperature, pressure, and humidity per hour from the BigQuery table.
+    """
+    client = setup_bigquery_client()
+    table_id = "nice-etching-420812.project.indoor_weather"
+
+    query = f"""
+    SELECT
+        TIMESTAMP_TRUNC(entry_timestamp, HOUR) as hour,
+        AVG(temperature) as avg_temperature,
+        AVG(pressure) as avg_pressure,
+        AVG(humidity) as avg_humidity
+    FROM `{table_id}`
+    GROUP BY hour
+    ORDER BY hour DESC
+    """
+
+    query_job = client.query(query)  # Make an API request.
+    results = query_job.result()  # Wait for the job to complete.
+
+    hourly_data = []
+    for row in results:
+        hourly_data.append({
+            "hour": row.hour,
+            "avg_temperature": row.avg_temperature,
+            "avg_pressure": row.avg_pressure,
+            "avg_humidity": row.avg_humidity
+        })
+
+    return hourly_data
+
 
 def get_last_ping_time() -> str:
     """
@@ -139,3 +171,6 @@ def get_last_ping_time() -> str:
         return row.entry_timestamp
     
 
+
+
+print(get_mean_weather_data_per_hour())

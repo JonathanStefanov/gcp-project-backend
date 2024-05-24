@@ -4,7 +4,7 @@ import signal
 from types import FrameType
 from weather_api import get_outdoor_weather
 from auth import token_required
-from bigquery_client import insert_weather_data, get_last_weather_data, get_current_user_name, update_current_user_name
+from bigquery_client import insert_weather_data, get_last_weather_data, get_current_user_name, update_current_user_name, get_mean_weather_data_per_hour
 from utils.logging import logger
 from utils.logging import flush
 import sys 
@@ -38,6 +38,11 @@ def upload_indoor_weather_route():
 @token_required
 def last_indoor_weather_route():
     return jsonify(get_last_weather_data())
+
+@app.route('/get_mean_indoor_weather')
+@token_required
+def mean_indoor_weather_route():
+    return jsonify(get_mean_weather_data_per_hour())
 
 
 @app.route('/generate_image')
