@@ -173,21 +173,25 @@ def get_last_ping_time() -> str:
 
 def get_wifi() -> list:
     """
-    Retrieves the most recent wifi data from the BigQuery table.
+    Retrieves all wifi data from the BigQuery table and returns a list of dictionaries with each WiFi's name and password.
     """
     client = setup_bigquery_client()
     table_id = "nice-etching-420812.project.wifi"
     
     query = f"""
-    SELECT *
+    SELECT name, password
     FROM `{table_id}`
     """
     
     query_job = client.query(query)  # Make an API request.
     results = query_job.result()  # Wait for the job to complete.
-    
+
+    wifi_list = []
     for row in results:
-        return {"name": row.name, "password": row.password}
+        wifi_list.append({"name": row.name, "password": row.password})
+
+    return wifi_list
+
     
 def add_wifi(name: str, password: str):
     """
@@ -207,3 +211,4 @@ def add_wifi(name: str, password: str):
     
 
 
+print(get_wifi())
