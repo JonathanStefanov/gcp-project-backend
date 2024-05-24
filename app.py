@@ -4,7 +4,7 @@ import signal
 from types import FrameType
 from weather_api import get_outdoor_weather
 from auth import token_required
-from bigquery_client import insert_weather_data, get_last_weather_data, get_current_user_name, update_current_user_name, get_mean_weather_data_per_hour
+from bigquery_client import insert_weather_data, get_last_weather_data, get_current_user_name, update_current_user_name, get_mean_weather_data_per_hour, get_wifi, add_wifi
 from utils.logging import logger
 from utils.logging import flush
 import sys 
@@ -59,7 +59,19 @@ def generate_tts_route():
     generate_tts(data)
     return send_file('output.wav', mimetype='audio/mpeg'), 200
 
+@app.route('/get_wifi')
+@token_required
+def get_wifi_route():
+    return jsonify(get_wifi())
 
+@app.route('/add_wifi', methods=['POST'])
+@token_required
+def add_wifi_route():
+    data = request.get_json()
+    name = data.get('name')
+    password = data.get('password')
+    add_wifi(name, password)
+    return jsonify({"message": "Data received successfully"})
 
 @app.route('/get_current_user_name')
 @token_required

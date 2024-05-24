@@ -171,5 +171,39 @@ def get_last_ping_time() -> str:
         return row.entry_timestamp
     
 
+def get_wifi() -> list:
+    """
+    Retrieves the most recent wifi data from the BigQuery table.
+    """
+    client = setup_bigquery_client()
+    table_id = "nice-etching-420812.project.wifi"
+    
+    query = f"""
+    SELECT *
+    FROM `{table_id}`
+    """
+    
+    query_job = client.query(query)  # Make an API request.
+    results = query_job.result()  # Wait for the job to complete.
+    
+    for row in results:
+        return {"name": row.name, "password": row.password}
+    
+def add_wifi(name: str, password: str):
+    """
+    Adds wifi data to the BigQuery table.
+    """
+    client = setup_bigquery_client()
+    table_id = "nice-etching-420812.project.wifi"
+    
+    rows_to_insert = [
+        {"name": name, "password": password}
+    ]
+    
+    errors = client.insert_rows_json(table_id, rows_to_insert)
+    
+    return errors == [] 
+    
+    
 
 
