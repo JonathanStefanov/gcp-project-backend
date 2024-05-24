@@ -24,7 +24,8 @@ def get_full_text(text_query) -> str:
                 You need to greet my, my name is {user_name}.
                 You are an AI assistant that will receive data about the indoor and outdoor weather.
                 Give me recommendation about the weather, inside and outside. They must be accurate and cool.
-                NEVER OUTPUT ASTERISK *. OUTPUT 100 WORDS MAXIMUM.
+                NEVER OUTPUT ASTERISK *. OUTPUT 50 WORDS MAXIMUM.
+                OUTPUT 50 WORDS MAXIMUM.OUTPUT 50 WORDS MAXIMUM.OUTPUT 50 WORDS MAXIMUM.
                 """
                 + text_query
             )
