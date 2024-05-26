@@ -209,6 +209,21 @@ def add_wifi(name: str, password: str):
     return errors == [] 
     
     
+def log_error(error: str):
+    """
+    Logs an error message to the BigQuery table.
+    """
+    client = setup_bigquery_client()
+    table_id = "nice-etching-420812.project.error"
+    
+    rows_to_insert = [
+        {"type": error}
+    ]
+    
+    errors = client.insert_rows_json(table_id, rows_to_insert)
+    
+    return errors == []
 
 
-print(get_wifi())
+
+
